@@ -10,4 +10,6 @@ public interface RegistroTiempoRepository extends JpaRepository<RegistroTiempo, 
     List<RegistroTiempo> findByTareaId(Long tareaId);
 
     List<RegistroTiempo> findByUsuarioId(Long usuarioId);
+
+    boolean existsByTareaId(Long tareaId);
 }
