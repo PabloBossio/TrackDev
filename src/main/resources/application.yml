@@ -12,3 +12,7 @@ spring:
     locations: classpath:db/migration
 server:
   port: ${SERVER_PORT:8080}
+app:
+  jwt:
+    secret: ${JWT_SECRET:cambiame-esta-clave-super-secreta-de-al-menos-32-caracteres-larga}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
