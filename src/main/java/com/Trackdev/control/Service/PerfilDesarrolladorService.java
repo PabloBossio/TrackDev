@@ -1,11 +1,11 @@
 package com.Trackdev.control.Service;
 
-import com.Trackdev.control.Entity.PerfilDesarrollador;
 import com.Trackdev.control.Dto.PerfilDesarrolladorRequestDTO;
 import com.Trackdev.control.Dto.PerfilDesarrolladorResponseDTO;
+import com.Trackdev.control.Entity.PerfilDesarrollador;
+import com.Trackdev.control.Exception.ResourceNotFoundException;
 import com.Trackdev.control.Mapper.PerfilDesarrolladorMapper;
 import com.Trackdev.control.Repository.PerfilDesarrolladorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +50,6 @@ public class PerfilDesarrolladorService {
 
     private PerfilDesarrollador buscarOLanzar(Long id) {
         return perfilRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("PerfilDesarrollador no encontrado: id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("PerfilDesarrollador no encontrado: id=" + id));
     }
 }
