@@ -5,10 +5,11 @@ import com.Trackdev.control.Entity.PerfilDesarrollador;
 import com.Trackdev.control.Entity.Usuario;
 import com.Trackdev.control.Dto.UsuarioRequestDTO;
 import com.Trackdev.control.Dto.UsuarioResponseDTO;
+import com.Trackdev.control.Exception.BusinessRuleException;
+import com.Trackdev.control.Exception.ResourceNotFoundException;
 import com.Trackdev.control.Mapper.UsuarioMapper;
 import com.Trackdev.control.Repository.PerfilDesarrolladorRepository;
 import com.Trackdev.control.Repository.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO crear(UsuarioRequestDTO dto) {
         if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new IllegalStateException("Ya existe un usuario con ese email");
+            throw new BusinessRuleException("Ya existe un usuario con ese email");
         }
 
         PerfilDesarrollador perfil = resolverPerfil(dto.rol(), dto.perfilId());
@@ -54,7 +55,7 @@ public class UsuarioService {
         Usuario usuario = buscarOLanzar(id);
 
         if (!usuario.getEmail().equalsIgnoreCase(dto.email()) && usuarioRepository.existsByEmail(dto.email())) {
-            throw new IllegalStateException("Ya existe un usuario con ese email");
+            throw new BusinessRuleException("Ya existe un usuario con ese email");
         }
 
         PerfilDesarrollador perfil = resolverPerfil(dto.rol(), dto.perfilId());
@@ -69,17 +70,17 @@ public class UsuarioService {
 
     private PerfilDesarrollador resolverPerfil(RolUsuario rol, Long perfilId) {
         if (rol == RolUsuario.OPERADOR && perfilId == null) {
-            throw new IllegalArgumentException("Un usuario OPERADOR debe tener un perfil asignado");
+            throw new BusinessRuleException("Un usuario OPERADOR debe tener un perfil asignado");
         }
         if (perfilId == null) {
             return null;
         }
         return perfilRepository.findById(perfilId)
-                .orElseThrow(() -> new EntityNotFoundException("PerfilDesarrollador no encontrado: id=" + perfilId));
+                .orElseThrow(() -> new ResourceNotFoundException("PerfilDesarrollador no encontrado: id=" + perfilId));
     }
 
     private Usuario buscarOLanzar(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: id=" + id));
     }
 }

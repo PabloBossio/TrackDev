@@ -6,7 +6,7 @@ import com.Trackdev.control.Entity.Usuario;
 import com.Trackdev.control.Mapper.UsuarioMapper;
 import com.Trackdev.control.Repository.UsuarioRepository;
 import com.Trackdev.control.Security.JwtService;
-import jakarta.persistence.EntityNotFoundException;
+import com.Trackdev.control.Exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +32,7 @@ public class AuthService {
         String token = jwtService.generarToken(userDetails);
 
         Usuario usuario = usuarioRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + dto.email()));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + dto.email()));
 
         return new LoginResponseDTO(token, UsuarioMapper.toResponseDTO(usuario));
     }
