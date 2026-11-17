@@ -1,0 +1,2 @@
+INSERT INTO usuario (nombre, apellido, email, password_hash, rol, perfil_id, activo, created_at, updated_at)
+VALUES ('Admin', 'TrackDev', 'admin@trackdev.com', '$2b$10$cQpdd.lF0xbVo7dEWVHh2uEhVIHxC1A8O8HV6nswc81.FptbMRLHG', 'ADMIN', NULL, true, now(), now());
