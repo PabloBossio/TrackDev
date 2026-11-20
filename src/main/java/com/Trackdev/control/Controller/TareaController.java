@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class TareaController {
 
     private final TareaService tareaService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<TareaResponseDTO> crear(@Valid @RequestBody TareaRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(tareaService.crear(dto));
@@ -33,11 +35,13 @@ public class TareaController {
         return tareaService.obtenerPorId(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public TareaResponseDTO actualizar(@PathVariable Long id, @Valid @RequestBody TareaRequestDTO dto) {
         return tareaService.actualizar(id, dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         tareaService.eliminar(id);
