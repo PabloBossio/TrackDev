@@ -50,8 +50,11 @@ public class GlobalExceptionHandler {
         return construir(HttpStatus.FORBIDDEN, "No tenés permisos para esta accion", request);
     }
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, HttpServletRequest request) {
+        log.error("Error no controlado en {}", request.getRequestURI(), ex);
         return construir(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request);
     }
 
