@@ -79,4 +79,11 @@ public class TareaService {
         }
         return modulo;
     }
+
+    @Transactional(readOnly = true)
+    public List<TareaResponseDTO> listarDisponiblesParaCargar() {
+        return tareaRepository.findDisponiblesParaCargar().stream()
+                .map(TareaMapper::toResponseDTO)
+                .toList();
+    }
 }
