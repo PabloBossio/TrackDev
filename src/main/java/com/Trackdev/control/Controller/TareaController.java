@@ -43,4 +43,9 @@ public class TareaController {
         tareaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/disponibles")
+    public List<TareaResponseDTO> listarDisponibles() {
+        return tareaService.listarDisponiblesParaCargar();
+    }
 }
