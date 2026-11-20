@@ -17,6 +17,8 @@ import com.Trackdev.control.Repository.RegistroTiempoRepository;
 import com.Trackdev.control.Repository.TareaRepository;
 import com.Trackdev.control.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,11 @@ public class RegistroTiempoService {
     private final EstimacionRepository estimacionRepository;
 
     public RegistroTiempoResponseDTO crear(RegistroTiempoRequestDTO dto) {
+        Usuario autenticado = usuarioAutenticado();
+        if (autenticado.getRol() == RolUsuario.OPERADOR && !autenticado.getId().equals(dto.usuarioId())) {
+            throw new AccessDeniedException("Un operador solo puede cargar horas a su propio nombre");
+        }
+
         Tarea tarea = buscarTareaCargable(dto.tareaId());
 
         // RN-01: no se puede cargar tiempo real sin estimación previa
@@ -83,6 +90,8 @@ public class RegistroTiempoService {
 
     public RegistroTiempoResponseDTO actualizar(Long id, RegistroTiempoRequestDTO dto) {
         RegistroTiempo registro = buscarOLanzar(id);
+        validarPropietarioOAdmin(registro);
+
         if (!registro.getTarea().getId().equals(dto.tareaId())) {
             throw new BusinessRuleException("No se puede mover un registro de horas a otra tarea");
         }
@@ -96,8 +105,24 @@ public class RegistroTiempoService {
 
     public void eliminar(Long id) {
         RegistroTiempo registro = buscarOLanzar(id);
+        validarPropietarioOAdmin(registro);
         buscarTareaCargable(registro.getTarea().getId());
         registroTiempoRepository.delete(registro);
+    }
+
+    private void validarPropietarioOAdmin(RegistroTiempo registro) {
+        Usuario autenticado = usuarioAutenticado();
+        boolean esDueño = autenticado.getId().equals(registro.getUsuario().getId());
+        boolean esAdmin = autenticado.getRol() == RolUsuario.ADMIN;
+        if (!esDueño && !esAdmin) {
+            throw new AccessDeniedException("No podés modificar registros de otro usuario");
+        }
+    }
+
+    private Usuario usuarioAutenticado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado: " + email));
     }
 
     private BigDecimal calcularCostoReal(BigDecimal horas, BigDecimal costoHora) {
