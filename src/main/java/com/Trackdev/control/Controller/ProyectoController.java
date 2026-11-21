@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class ProyectoController {
 
     private final ProyectoService proyectoService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProyectoResponseDTO> crear(@Valid @RequestBody ProyectoRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(proyectoService.crear(dto));
@@ -36,11 +38,13 @@ public class ProyectoController {
         return proyectoService.obtenerPorId(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ProyectoResponseDTO actualizar(@PathVariable Long id, @Valid @RequestBody ProyectoRequestDTO dto) {
         return proyectoService.actualizar(id, dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelar(@PathVariable Long id) {
         proyectoService.cancelar(id);
