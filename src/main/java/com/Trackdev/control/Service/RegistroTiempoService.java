@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -161,5 +162,17 @@ public class RegistroTiempoService {
             throw new BusinessRuleException("El operador " + usuarioId + " no tiene perfil asignado");
         }
         return usuario;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RegistroTiempoResponseDTO> listarMisRegistros(LocalDate desde, LocalDate hasta, Long proyectoId) {
+        Usuario autenticado = usuarioAutenticado();
+        return registroTiempoRepository.findByUsuarioId(autenticado.getId()).stream()
+                .filter(r -> desde == null || !r.getFecha().isBefore(desde))
+                .filter(r -> hasta == null || !r.getFecha().isAfter(hasta))
+                .filter(r -> proyectoId == null || r.getTarea().getModulo().getProyecto().getId().equals(proyectoId))
+                .sorted(java.util.Comparator.comparing(RegistroTiempo::getFecha).reversed())
+                .map(RegistroTiempoMapper::toResponseDTO)
+                .toList();
     }
 }

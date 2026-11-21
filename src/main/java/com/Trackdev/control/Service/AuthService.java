@@ -3,19 +3,21 @@ package com.Trackdev.control.Service;
 import com.Trackdev.control.Dto.LoginRequestDTO;
 import com.Trackdev.control.Dto.LoginResponseDTO;
 import com.Trackdev.control.Entity.Usuario;
+import com.Trackdev.control.Exception.ResourceNotFoundException;
 import com.Trackdev.control.Mapper.UsuarioMapper;
 import com.Trackdev.control.Repository.UsuarioRepository;
 import com.Trackdev.control.Security.JwtService;
-import com.Trackdev.control.Exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
