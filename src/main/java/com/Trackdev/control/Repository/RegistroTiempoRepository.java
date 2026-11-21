@@ -20,4 +20,10 @@ public interface RegistroTiempoRepository extends JpaRepository<RegistroTiempo, 
 
     @Query("SELECT COALESCE(SUM(r.costoReal), 0) FROM RegistroTiempo r WHERE r.tarea.modulo.proyecto.id = :proyectoId")
     BigDecimal sumCostoRealPorProyecto(Long proyectoId);
+
+    @Query("SELECT COALESCE(SUM(r.horasTrabajadas), 0) FROM RegistroTiempo r WHERE r.tarea.modulo.id = :moduloId")
+    BigDecimal sumHorasTrabajadasPorModulo(Long moduloId);
+
+    @Query("SELECT COALESCE(SUM(r.costoReal), 0) FROM RegistroTiempo r WHERE r.tarea.modulo.id = :moduloId")
+    BigDecimal sumCostoRealPorModulo(Long moduloId);
 }
