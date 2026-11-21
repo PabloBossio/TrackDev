@@ -18,4 +18,10 @@ public interface EstimacionRepository extends JpaRepository<Estimacion, Long> {
 
     @Query("SELECT COALESCE(SUM(e.costoEstimado), 0) FROM Estimacion e WHERE e.tarea.modulo.proyecto.id = :proyectoId")
     BigDecimal sumCostoEstimadoPorProyecto(Long proyectoId);
+
+    @Query("SELECT COALESCE(SUM(e.horasEstimadas), 0) FROM Estimacion e WHERE e.tarea.modulo.id = :moduloId")
+    BigDecimal sumHorasEstimadasPorModulo(Long moduloId);
+
+    @Query("SELECT COALESCE(SUM(e.costoEstimado), 0) FROM Estimacion e WHERE e.tarea.modulo.id = :moduloId")
+    BigDecimal sumCostoEstimadoPorModulo(Long moduloId);
 }
