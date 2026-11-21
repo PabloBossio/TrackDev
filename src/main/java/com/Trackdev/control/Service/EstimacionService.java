@@ -17,6 +17,7 @@ import com.Trackdev.control.Repository.RegistroTiempoRepository;
 import com.Trackdev.control.Repository.TareaRepository;
 import com.Trackdev.control.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,7 @@ public class EstimacionService {
             throw new BusinessRuleException("La tarea " + tareaId + " ya tiene una estimación cargada");
         }
         PerfilDesarrollador perfil = buscarPerfilActivo(dto.perfilEstimadoId());
-        Usuario creador = buscarAdminActivo(dto.creadoPorId());
+        Usuario creador = buscarAdminActivo(usuarioAutenticado().getId());
         BigDecimal costo = calcularCosto(dto.horasEstimadas(), perfil);
 
         Estimacion estimacion = EstimacionMapper.toEntity(dto, tarea, perfil, creador, costo);
@@ -68,6 +69,12 @@ public class EstimacionService {
         Estimacion estimacion = buscarPorTareaOLanzar(tareaId);
         validarSinHorasCargadas(tareaId);
         estimacionRepository.delete(estimacion);
+    }
+
+    private Usuario usuarioAutenticado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado: " + email));
     }
 
     private BigDecimal calcularCosto(BigDecimal horas, PerfilDesarrollador perfil) {

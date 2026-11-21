@@ -39,9 +39,7 @@ public class RegistroTiempoService {
 
     public RegistroTiempoResponseDTO crear(RegistroTiempoRequestDTO dto) {
         Usuario autenticado = usuarioAutenticado();
-        if (autenticado.getRol() == RolUsuario.OPERADOR && !autenticado.getId().equals(dto.usuarioId())) {
-            throw new AccessDeniedException("Un operador solo puede cargar horas a su propio nombre");
-        }
+        Long usuarioId = resolverUsuarioId(autenticado, dto.usuarioId());
 
         Tarea tarea = buscarTareaCargable(dto.tareaId());
 
@@ -51,7 +49,7 @@ public class RegistroTiempoService {
                     "No se pueden cargar horas en la tarea " + tarea.getId() + " porque no tiene estimación");
         }
 
-        Usuario usuario = buscarOperadorActivo(dto.usuarioId());
+        Usuario usuario = buscarOperadorActivo(usuarioId);
         BigDecimal costoHoraAplicado = usuario.getPerfil().getCostoHora();
         BigDecimal costoReal = calcularCostoReal(dto.horasTrabajadas(), costoHoraAplicado);
 
@@ -109,6 +107,16 @@ public class RegistroTiempoService {
         validarPropietarioOAdmin(registro);
         buscarTareaCargable(registro.getTarea().getId());
         registroTiempoRepository.delete(registro);
+    }
+
+    private Long resolverUsuarioId(Usuario autenticado, Long usuarioIdDelBody) {
+        if (autenticado.getRol() == RolUsuario.OPERADOR) {
+            return autenticado.getId();
+        }
+        if (usuarioIdDelBody == null) {
+            throw new BusinessRuleException("El ADMIN debe indicar el usuarioId al cargar un registro de horas");
+        }
+        return usuarioIdDelBody;
     }
 
     private void validarPropietarioOAdmin(RegistroTiempo registro) {
