@@ -5,11 +5,13 @@ import com.Trackdev.control.Dto.RegistroTiempoResponseDTO;
 import com.Trackdev.control.Service.RegistroTiempoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -51,5 +53,13 @@ public class RegistroTiempoController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         registroTiempoService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mios")
+    public List<RegistroTiempoResponseDTO> listarMisRegistros(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+            @RequestParam(required = false) Long proyectoId) {
+        return registroTiempoService.listarMisRegistros(desde, hasta, proyectoId);
     }
 }
