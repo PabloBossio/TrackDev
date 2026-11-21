@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 public record RegistroTiempoRequestDTO(
         @NotNull Long tareaId,
-        @NotNull Long usuarioId,
+        Long usuarioId,
         @NotNull @PastOrPresent LocalDate fecha,
         @NotNull @Positive @DecimalMax("24.00") @Digits(integer = 2, fraction = 2) BigDecimal horasTrabajadas,
         @Size(max = 300) String descripcion

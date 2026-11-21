@@ -3,6 +3,7 @@ package com.Trackdev.control.Service;
 import com.Trackdev.control.Dto.PerfilDesarrolladorRequestDTO;
 import com.Trackdev.control.Dto.PerfilDesarrolladorResponseDTO;
 import com.Trackdev.control.Entity.PerfilDesarrollador;
+import com.Trackdev.control.Exception.BusinessRuleException;
 import com.Trackdev.control.Exception.ResourceNotFoundException;
 import com.Trackdev.control.Mapper.PerfilDesarrolladorMapper;
 import com.Trackdev.control.Repository.PerfilDesarrolladorRepository;
@@ -20,6 +21,9 @@ public class PerfilDesarrolladorService {
     private final PerfilDesarrolladorRepository perfilRepository;
 
     public PerfilDesarrolladorResponseDTO crear(PerfilDesarrolladorRequestDTO dto) {
+        if (perfilRepository.existsByNombre(dto.nombre())) {
+            throw new BusinessRuleException("Ya existe un perfil con el nombre '" + dto.nombre() + "'");
+        }
         PerfilDesarrollador perfil = PerfilDesarrolladorMapper.toEntity(dto);
         perfil = perfilRepository.save(perfil);
         return PerfilDesarrolladorMapper.toResponseDTO(perfil);
@@ -39,6 +43,9 @@ public class PerfilDesarrolladorService {
 
     public PerfilDesarrolladorResponseDTO actualizar(Long id, PerfilDesarrolladorRequestDTO dto) {
         PerfilDesarrollador perfil = buscarOLanzar(id);
+        if (perfilRepository.existsByNombreAndIdNot(dto.nombre(), id)) {
+            throw new BusinessRuleException("Ya existe un perfil con el nombre '" + dto.nombre() + "'");
+        }
         PerfilDesarrolladorMapper.updateEntity(perfil, dto);
         return PerfilDesarrolladorMapper.toResponseDTO(perfil);
     }

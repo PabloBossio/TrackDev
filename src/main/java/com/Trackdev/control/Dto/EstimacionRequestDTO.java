@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 public record EstimacionRequestDTO(
         @NotNull Long perfilEstimadoId,
-        @NotNull @Positive @Digits(integer = 6, fraction = 2) BigDecimal horasEstimadas,
-        @NotNull Long creadoPorId
+        @NotNull @Positive @Digits(integer = 6, fraction = 2) BigDecimal horasEstimadas
 ) {
 }
